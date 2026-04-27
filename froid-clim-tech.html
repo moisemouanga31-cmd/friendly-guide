@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a1628">
+<meta name="description" content="Application technique froid & climatisation - Installation, dépannage, schémas, QCM">
+<title>❄️ FroidTech Pro</title>
+<link rel="manifest" href="#" id="manifest-link">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-deep: #040d1a;
+  --bg-dark: #0a1628;
+  --bg-card: #0f1f3d;
+  --bg-card2: #0d1a35;
+  --accent-ice: #00d4ff;
+  --accent-cold: #00a8cc;
+  --accent-frost: #7ee8fa;
+  --accent-warm: #ff6b35;
+  --accent-danger: #ff3366;
+  --accent-success: #00ff88;
+  --accent-yellow: #ffd700;
+  --text-primary: #e8f4fd;
+  --text-secondary: #8ab4d4;
+  --text-dim: #4a6a8a;
+  --border-glow: rgba(0,212,255,0.3);
+  --shadow-ice: 0 0 20px rgba(0,212,255,0.2);
+  --shadow-deep: 0 20px 60px rgba(0,0,0,0.8);
+  --font-title: 'Orbitron', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:var(--bg-deep);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-size:16px;
+}
+body{
+  background: radial-gradient(ellipse at 20% 50%, rgba(0,60,120,0.4) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(0,100,200,0.2) 0%, transparent 50%),
+              var(--bg-deep);
+}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg-dark);}
+::-webkit-scrollbar-thumb{background:var(--accent-cold);border-radius:2px;}
+
+/* APP WRAPPER */
+#app{
+  display:flex;flex-direction:column;
+  width:100vw;height:100vh;height:100dvh;
+  overflow:hidden;
+  position:relative;
+}
+
+/* HEADER */
+#header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;
+  background:rgba(10,22,40,0.95);
+  border-bottom:1px solid var(--border-glow);
+  box-shadow:0 4px 20px rgba(0,212,255,0.1);
+  flex-shrink:0;
+  position:relative;
+  z-index:100;
+}
+.header-logo{
+  display:flex;align-items:center;gap:12px;
+}
+.logo-icon{
+  width:42px;height:42px;
+  background:linear-gradient(135deg,var(--accent-ice),var(--accent-cold));
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  box-shadow:0 0 15px rgba(0,212,255,0.5);
+  animation:pulse-glow 3s ease-in-out infinite;
+}
+@keyframes pulse-glow{
+  0%,100%{box-shadow:0 0 15px rgba(0,212,255,0.5);}
+  50%{box-shadow:0 0 30px rgba(0,212,255,0.9),0 0 60px rgba(0,212,255,0.3);}
+}
+.logo-text{
+  font-family:var(--font-title);
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:2px;
+  background:linear-gradient(135deg,var(--accent-frost),var(--accent-ice));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.logo-sub{
+  font-size:10px;letter-spacing:3px;
+  color:var(--text-secondary);font-family:var(--font-mono);
+  line-height:1;
+}
+.header-status{
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;font-family:var(--font-mono);
+  color:var(--accent-success);
+}
+.status-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--accent-success);
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.offline-badge{
+  background:rgba(255,107,53,0.2);
+  border:1px solid var(--accent-warm);
+  color:var(--accent-warm);
+  padding:3px 8px;border-radius:4px;
+  font-size:9px;letter-spacing:2px;font-family:var(--font-mono);
+}
+
+/* MAIN CONTENT AREA */
+#content{
+  flex:1;overflow:hidden;
+  display:flex;flex-direction:column;
+  position:relative;
+}
+
+/* SCREENS */
+.screen{
+  position:absolute;inset:0;
+  overflow-y:auto;
+  padding:20px;
+  animation:fadeIn 0.3s ease;
+  display:none;
+}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* BOTTOM NAV */
+#bottom-nav{
+  display:flex;
+  background:rgba(10,22,40,0.98);
+  border-top:1px solid var(--border-glow);
+  flex-shrink:0;
+  padding:0;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-btn{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:10px 4px 8px;
+  border:none;background:none;cursor:pointer;
+  color:var(--text-dim);
+  font-family:var(--font-body);
+  font-size:9px;letter-spacing:0.5px;font-weight:600;
+  text-transform:uppercase;
+  transition:all 0.2s;
+  position:relative;
+  gap:4px;
+}
+.nav-btn .nav-icon{font-size:20px;line-height:1;transition:transform 0.2s;}
+.nav-btn:hover{color:var(--accent-ice);}
+.nav-btn.active{color:var(--accent-ice);}
+.nav-btn.active .nav-icon{transform:scale(1.2);}
+.nav-btn.active::before{
+  content:'';position:absolute;top:0;left:20%;right:20%;
+  height:2px;background:var(--accent-ice);
+  box-shadow:0 0 8px var(--accent-ice);
+  border-radius:0 0 2px 2px;
+}
+
+/* HOME SCREEN */
+.home-hero{
+  text-align:center;padding:20px 0 30px;
+}
+.home-title{
+  font-family:var(--font-title);font-size:28px;font-weight:900;
+  letter-spacing:4px;
+  background:linear-gradient(135deg,var(--accent-frost),var(--accent-ice),var(--accent-cold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-shadow:none;
+  margin-bottom:4px;
+}
+.home-subtitle{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:3px;
+  color:var(--text-secondary);
+}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+.module-card{
+  background:var(--bg-card);
+  border:1px solid rgba(0,212,255,0.15);
+  border-radius:14px;
+  padding:18px 14px;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+  text-align:center;
+}
+.module-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,212,255,0.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+.module-card:hover,.module-card:active{
+  border-color:var(--accent-ice);
+  box-shadow:var(--shadow-ice);
+  transform:translateY(-2px);
+}
+.module-card .card-icon{font-size:32px;margin-bottom:8px;display:block;}
+.module-card .card-title{
+  font-family:var(--font-body);font-weight:700;font-size:13px;
+  color:var(--text-primary);letter-spacing:0.5px;
+  margin-bottom:4px;
+}
+.module-card .card-desc{
+  font-size:10px;color:var(--text-secondary);line-height:1.4;
+}
+.card-accent{
+  position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent-ice),transparent);
+}
+.card-hot .card-accent{background:linear-gradient(90deg,transparent,var(--accent-warm),transparent);}
+.card-danger .card-accent{background:linear-gradient(90deg,transparent,var(--accent-danger),transparent);}
+.card-success .card-accent{background:linear-gradient(90deg,transparent,var(--accent-success),transparent);}
+.card-yellow .card-accent{background:linear-gradient(90deg,transparent,var(--accent-yellow),transparent);}
+
+/* SECTION HEADERS */
+.sec-header{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:16px;
+}
+.sec-icon{font-size:24px;}
+.sec-title{
+  font-family:var(--font-title);font-size:16px;font-weight:700;
+  letter-spacing:2px;color:var(--accent-ice);
+}
+.sec-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border-glow),transparent);}
+
+/* INSTALL STEPS */
+.steps-container{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+.step-card{
+  background:var(--bg-card);border:1px solid rgba(0,212,255,0.12);
+  border-radius:12px;overflow:hidden;cursor:pointer;
+}
+.step-header{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  transition:background 0.2s;
+}
+.step-header:hover{background:rgba(0,212,255,0.05);}
+.step-num{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent-cold),var(--accent-ice));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-size:12px;font-weight:900;
+  color:var(--bg-deep);flex-shrink:0;
+}
+.step-name{font-weight:700;font-size:14px;flex:1;}
+.step-arrow{color:var(--text-dim);transition:transform 0.2s;}
+.step-card.open .step-arrow{transform:rotate(90deg);}
+.step-body{
+  display:none;padding:0 16px 16px;
+  border-top:1px solid rgba(0,212,255,0.08);
+}
+.step-card.open .step-body{display:block;}
+.step-body ul{padding-left:0;list-style:none;}
+.step-body ul li{
+  padding:6px 0 6px 20px;position:relative;
+  font-size:13px;color:var(--text-secondary);line-height:1.5;
+  border-bottom:1px solid rgba(0,212,255,0.05);
+}
+.step-body ul li::before{
+  content:'▸';position:absolute;left:0;
+  color:var(--accent-ice);
+}
+.step-body ul li:last-child{border-bottom:none;}
+.warning-box{
+  background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.3);
+  border-radius:8px;padding:10px 12px;margin-top:10px;
+  font-size:12px;color:var(--accent-warm);
+  display:flex;gap:8px;align-items:flex-start;
+}
+.info-box{
+  background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);
+  border-radius:8px;padding:10px 12px;margin-top:10px;
+  font-size:12px;color:var(--accent-frost);
+  display:flex;gap:8px;align-items:flex-start;
+}
+
+/* TROUBLESHOOT */
+.trouble-grid{display:flex;flex-direction:column;gap:10px;}
+.trouble-item{
+  background:var(--bg-card);border:1px solid rgba(255,51,102,0.15);
+  border-radius:12px;overflow:hidden;cursor:pointer;
+}
+.trouble-hdr{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;
+  transition:background 0.2s;
+}
+.trouble-hdr:hover{background:rgba(255,51,102,0.05);}
+.trouble-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent-danger);
+  box-shadow:0 0 8px var(--accent-danger);
+  flex-shrink:0;
+}
+.trouble-dot.warn{background:var(--accent-yellow);box-shadow:0 0 8px var(--accent-yellow);}
+.trouble-dot.ok{background:var(--accent-success);box-shadow:0 0 8px var(--accent-success);}
+.trouble-name{font-weight:700;font-size:14px;flex:1;}
+.trouble-tag{
+  font-size:9px;letter-spacing:1px;padding:2px 8px;
+  border-radius:4px;font-family:var(--font-mono);
+}
+.tag-critical{background:rgba(255,51,102,0.2);color:var(--accent-danger);}
+.tag-warn{background:rgba(255,215,0,0.2);color:var(--accent-yellow);}
+.tag-info{background:rgba(0,212,255,0.2);color:var(--accent-ice);}
+.trouble-body{
+  display:none;padding:0 14px 14px;
+  border-top:1px solid rgba(255,51,102,0.08);
+}
+.trouble-item.open .trouble-body{display:block;}
+.diag-steps{list-style:none;counter-reset:diag;}
+.diag-steps li{
+  counter-increment:diag;
+  padding:8px 0 8px 30px;position:relative;
+  font-size:13px;color:var(--text-secondary);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.diag-steps li::before{
+  content:counter(diag);
+  position:absolute;left:0;
+  width:20px;height:20px;
+  background:rgba(255,51,102,0.2);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-family:var(--font-mono);
+  color:var(--accent-danger);
+  line-height:20px;text-align:center;
+}
+.diag-steps li:last-child{border-bottom:none;}
+
+/* SCHEMA SCREEN */
+.schema-tabs{
+  display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;
+}
+.stab{
+  padding:7px 14px;border-radius:8px;cursor:pointer;
+  border:1px solid rgba(0,212,255,0.2);
+  font-family:var(--font-body);font-weight:600;font-size:12px;
+  color:var(--text-secondary);background:transparent;
+  transition:all 0.2s;
+}
+.stab.active,.stab:hover{
+  background:rgba(0,212,255,0.15);color:var(--accent-ice);
+  border-color:var(--accent-ice);
+}
+.schema-view{
+  background:var(--bg-card);border:1px solid var(--border-glow);
+  border-radius:14px;overflow:hidden;min-height:200px;
+}
+.schema-canvas{
+  width:100%;padding:20px;
+  font-family:var(--font-mono);font-size:11px;
+  line-height:1.8;color:var(--accent-frost);
+  overflow-x:auto;
+}
+.schema-legend{
+  padding:14px;border-top:1px solid var(--border-glow);
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.legend-item{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:var(--text-secondary);
+}
+.legend-color{width:12px;height:12px;border-radius:3px;}
+
+/* CIRCUIT SCREEN */
+.circuit-cards{display:flex;flex-direction:column;gap:12px;}
+.circuit-card{
+  background:var(--bg-card);border:1px solid rgba(0,212,255,0.15);
+  border-radius:14px;overflow:hidden;
+}
+.circuit-hdr{
+  padding:14px 16px;cursor:pointer;
+  display:flex;align-items:center;gap:12px;
+  background:rgba(0,212,255,0.03);
+  transition:background 0.2s;
+}
+.circuit-hdr:hover{background:rgba(0,212,255,0.08);}
+.circuit-ico{font-size:24px;}
+.circuit-name{font-weight:700;font-size:14px;flex:1;}
+.circuit-body{
+  display:none;padding:16px;
+  border-top:1px solid rgba(0,212,255,0.1);
+}
+.circuit-card.open .circuit-body{display:block;}
+.params-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.param-item{
+  background:rgba(0,0,0,0.3);border-radius:8px;padding:10px;
+  border:1px solid rgba(0,212,255,0.1);
+}
+.param-label{font-size:10px;color:var(--text-dim);letter-spacing:1px;font-family:var(--font-mono);margin-bottom:4px;}
+.param-value{font-family:var(--font-mono);font-size:14px;color:var(--accent-ice);font-weight:700;}
+.param-unit{font-size:10px;color:var(--text-secondary);}
+
+/* FRIGO SECTION */
+.frigo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.frigo-card{
+  background:var(--bg-card);border:1px solid rgba(126,232,250,0.15);
+  border-radius:12px;padding:14px;cursor:pointer;
+  transition:all 0.2s;text-align:center;
+}
+.frigo-card:hover{border-color:var(--accent-frost);box-shadow:0 0 15px rgba(126,232,250,0.15);}
+.frigo-card .f-icon{font-size:30px;margin-bottom:8px;}
+.frigo-card .f-title{font-weight:700;font-size:13px;margin-bottom:4px;}
+.frigo-card .f-temp{
+  font-family:var(--font-mono);font-size:18px;font-weight:700;
+  color:var(--accent-ice);margin-bottom:4px;
+}
+.frigo-card .f-desc{font-size:10px;color:var(--text-secondary);}
+.tips-list{display:flex;flex-direction:column;gap:8px;}
+.tip-item{
+  background:var(--bg-card);border-radius:10px;padding:12px;
+  border-left:3px solid var(--accent-ice);
+  font-size:13px;color:var(--text-secondary);line-height:1.5;
+}
+.tip-item.hot{border-left-color:var(--accent-warm);}
+.tip-item.danger{border-left-color:var(--accent-danger);}
+.tip-item.success{border-left-color:var(--accent-success);}
+.tip-title{font-weight:700;color:var(--text-primary);font-size:13px;margin-bottom:4px;}
+
+/* QCM SCREEN */
+.qcm-header{text-align:center;padding:10px 0 20px;}
+.qcm-score{
+  font-family:var(--font-title);font-size:36px;font-weight:900;
+  color:var(--accent-ice);
+}
+.qcm-label{font-size:11px;letter-spacing:2px;color:var(--text-secondary);font-family:var(--font-mono);}
+.progress-bar-wrap{
+  background:rgba(0,0,0,0.4);border-radius:4px;height:6px;
+  margin:12px 0;overflow:hidden;
+}
+.progress-bar{
+  height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--accent-cold),var(--accent-ice));
+  transition:width 0.5s ease;
+  box-shadow:0 0 8px var(--accent-ice);
+}
+.question-card{
+  background:var(--bg-card);border:1px solid var(--border-glow);
+  border-radius:16px;padding:20px;margin-bottom:16px;
+}
+.q-category{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:2px;
+  color:var(--accent-cold);margin-bottom:8px;
+}
+.q-text{font-size:15px;font-weight:600;line-height:1.5;margin-bottom:16px;}
+.q-options{display:flex;flex-direction:column;gap:8px;}
+.q-opt{
+  padding:12px 14px;border-radius:10px;
+  border:1px solid rgba(0,212,255,0.15);
+  background:rgba(0,0,0,0.3);cursor:pointer;
+  font-size:13px;font-weight:500;
+  transition:all 0.2s;
+  text-align:left;color:var(--text-primary);
+  font-family:var(--font-body);
+}
+.q-opt:hover{border-color:var(--accent-ice);background:rgba(0,212,255,0.08);}
+.q-opt.correct{border-color:var(--accent-success);background:rgba(0,255,136,0.12);color:var(--accent-success);}
+.q-opt.wrong{border-color:var(--accent-danger);background:rgba(255,51,102,0.1);color:var(--accent-danger);}
+.q-opt.disabled{pointer-events:none;}
+.q-explanation{
+  margin-top:14px;padding:12px;
+  background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.15);
+  border-radius:8px;font-size:12px;color:var(--accent-frost);
+  line-height:1.6;display:none;
+}
+.q-explanation.show{display:block;}
+.qcm-controls{display:flex;gap:10px;justify-content:center;margin-top:16px;}
+.btn-primary{
+  padding:12px 24px;border-radius:10px;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent-cold),var(--accent-ice));
+  border:none;color:var(--bg-deep);
+  font-family:var(--font-body);font-weight:700;font-size:14px;
+  letter-spacing:1px;transition:all 0.2s;
+  box-shadow:0 4px 15px rgba(0,212,255,0.3);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,212,255,0.4);}
+.btn-secondary{
+  padding:12px 24px;border-radius:10px;cursor:pointer;
+  background:transparent;
+  border:1px solid var(--accent-ice);color:var(--accent-ice);
+  font-family:var(--font-body);font-weight:700;font-size:14px;
+  letter-spacing:1px;transition:all 0.2s;
+}
+.btn-secondary:hover{background:rgba(0,212,255,0.1);}
+
+/* CHATBOT SCREEN */
+.chat-container{
+  display:flex;flex-direction:column;
+  height:calc(100vh - 140px);height:calc(100dvh - 140px);
+}
+.chat-messages{
+  flex:1;overflow-y:auto;
+  padding:16px 0;
+  display:flex;flex-direction:column;gap:12px;
+}
+.msg{
+  max-width:85%;
+  animation:msgIn 0.3s ease;
+}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{align-self:flex-end;}
+.msg.bot{align-self:flex-start;}
+.msg-bubble{
+  padding:12px 14px;border-radius:14px;
+  font-size:13px;line-height:1.6;
+}
+.msg.user .msg-bubble{
+  background:linear-gradient(135deg,rgba(0,168,204,0.3),rgba(0,212,255,0.2));
+  border:1px solid rgba(0,212,255,0.3);
+  border-radius:14px 14px 4px 14px;
+  color:var(--text-primary);
+}
+.msg.bot .msg-bubble{
+  background:var(--bg-card);
+  border:1px solid rgba(0,212,255,0.15);
+  border-radius:14px 14px 14px 4px;
+  color:var(--text-secondary);
+}
+.msg-time{font-size:10px;color:var(--text-dim);margin-top:4px;
+  font-family:var(--font-mono);}
+.msg.user .msg-time{text-align:right;}
+.bot-typing{
+  display:flex;gap:4px;padding:8px;align-items:center;
+}
+.typing-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent-cold);
+  animation:typing 1.4s ease-in-out infinite;
+}
+.typing-dot:nth-child(2){animation-delay:0.2s;}
+.typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes typing{0%,80%,100%{transform:scale(0.8);opacity:0.5;}40%{transform:scale(1.2);opacity:1;}}
+.chat-input-wrap{
+  display:flex;gap:8px;padding:0;padding-top:12px;
+  border-top:1px solid var(--border-glow);
+}
+.chat-input{
+  flex:1;background:var(--bg-card);
+  border:1px solid rgba(0,212,255,0.2);
+  border-radius:12px;padding:12px 14px;
+  color:var(--text-primary);font-family:var(--font-body);font-size:13px;
+  outline:none;resize:none;min-height:48px;max-height:120px;
+  transition:border-color 0.2s;
+}
+.chat-input:focus{border-color:var(--accent-ice);}
+.chat-input::placeholder{color:var(--text-dim);}
+.chat-send{
+  width:48px;height:48px;border-radius:12px;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent-cold),var(--accent-ice));
+  border:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+  transition:all 0.2s;
+  box-shadow:0 4px 12px rgba(0,212,255,0.3);
+}
+.chat-send:hover{transform:scale(1.05);box-shadow:0 6px 18px rgba(0,212,255,0.5);}
+.chat-quick{
+  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;
+}
+.quick-btn{
+  padding:6px 12px;border-radius:20px;cursor:pointer;
+  border:1px solid rgba(0,212,255,0.2);background:rgba(0,212,255,0.05);
+  color:var(--text-secondary);font-size:11px;font-family:var(--font-body);
+  transition:all 0.2s;white-space:nowrap;
+}
+.quick-btn:hover{border-color:var(--accent-ice);color:var(--accent-ice);}
+
+/* FULLSCREEN BTN */
+.fullscreen-btn{
+  position:fixed;bottom:80px;right:16px;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(0,212,255,0.15);
+  border:1px solid rgba(0,212,255,0.3);
+  cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;transition:all 0.2s;
+  box-shadow:var(--shadow-ice);
+}
+.fullscreen-btn:hover{background:rgba(0,212,255,0.25);}
+
+/* REFRIGERANT TABLE */
+.ref-table{
+  width:100%;border-collapse:collapse;
+  font-size:12px;
+  margin-bottom:16px;
+}
+.ref-table th{
+  background:rgba(0,212,255,0.1);
+  padding:8px 10px;text-align:left;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:1px;
+  color:var(--accent-ice);border-bottom:1px solid var(--border-glow);
+}
+.ref-table td{
+  padding:8px 10px;
+  border-bottom:1px solid rgba(0,212,255,0.05);
+  color:var(--text-secondary);font-family:var(--font-mono);
+}
+.ref-table tr:hover td{background:rgba(0,212,255,0.03);}
+
+/* TOAST */
+.toast{
+  position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:rgba(0,255,136,0.15);border:1px solid var(--accent-success);
+  color:var(--accent-success);padding:10px 20px;border-radius:8px;
+  font-family:var(--font-mono);font-size:12px;letter-spacing:1px;
+  z-index:9999;opacity:0;transition:all 0.3s;pointer-events:none;
+  white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Loading overlay for AI */
+.ai-loading{display:none;}
+.ai-loading.show{display:flex;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div class="header-logo">
+      <div class="logo-icon">❄️</div>
+      <div>
+        <div class="logo-text">FROIDTECH</div>
+        <div class="logo-sub">PRO v2.0</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="offline-badge">HORS-LIGNE ✓</div>
+      <div class="header-status">
+        <div class="status-dot"></div>
+        <span id="time-display">--:--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- HOME -->
+    <div class="screen active" id="screen-home">
+      <div class="home-hero">
+        <div class="home-title">FROID & CLIM</div>
+        <div class="home-subtitle">RÉFÉRENCE TECHNIQUE COMPLÈTE</div>
+      </div>
+      <div class="grid-2">
+        <div class="module-card" onclick="goTo('installation')">
+          <span class="card-icon">🔧</span>
+          <div class="card-title">INSTALLATION</div>
+          <div class="card-desc">Split, multi-split, cassette — guide complet</div>
+          <div class="card-accent"></div>
+        </div>
+        <div class="module-card card-danger" onclick="goTo('depannage')">
+          <span class="card-icon">⚡</span>
+          <div class="card-title">DÉPANNAGE</div>
+          <div class="card-desc">Codes erreurs, diagnostics, solutions</div>
+          <div class="card-accent"></div>
+        </div>
+        <div class="module-card" onclick="goTo('schemas')">
+          <span class="card-icon">📐</span>
+          <div class="card-title">SCHÉMAS</div>
+          <div class="card-desc">Circuits frigorifiques & électriques</div>
+          <div class="card-accent"></div>
+        </div>
+        <div class="module-card card-success" onclick="goTo('circuits')">
+          <span class="card-icon">🌡️</span>
+          <div class="card-title">CIRCUITS</div>
+          <div class="card-desc">Contrôle pression, température, fluides</div>
+          <div class="card-accent"></div>
+        </div>
+        <div class="module-card card-hot" onclick="goTo('frigo')">
+          <span class="card-icon">🧊</span>
+          <div class="card-title">FRIGO & CONGÉL.</div>
+          <div class="card-desc">Trucs, pannes et entretien</div>
+          <div class="card-accent"></div>
+        </div>
+        <div class="module-card card-yellow" onclick="goTo('qcm')">
+          <span class="card-icon">📝</span>
+          <div class="card-title">QCM</div>
+          <div class="card-desc">Tests de connaissance interactifs</div>
+          <div class="card-accent"></div>
+        </div>
+      </div>
+      <div class="module-card" onclick="goTo('chatbot')" style="border-color:rgba(0,255,136,0.3);">
+        <span class="card-icon">🤖</span>
+        <div class="card-title" style="color:var(--accent-success);">IA TECHNICIEN — CHATBOT</div>
+        <div class="card-desc">Posez vos questions techniques, obtenez des réponses instantanées</div>
+        <div class="card-accent" style="background:linear-gradient(90deg,transparent,var(--accent-success),transparent);"></div>
+      </div>
+
+      <!-- Réfrigérants rapides -->
+      <div class="sec-header" style="margin-top:20px;">
+        <div class="sec-icon">💧</div>
+        <div class="sec-title">FLUIDES FRIGORIGÈNES</div>
+        <div class="sec-line"></div>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:12px;overflow:hidden;">
+        <table class="ref-table">
+          <thead>
+            <tr><th>FLUIDE</th><th>TYPE</th><th>GWP</th><th>Tbull (°C)</th><th>Pression bar</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>R410A</td><td>HFC zéo.</td><td>2088</td><td>-51.6</td><td>24-32</td></tr>
+            <tr><td>R32</td><td>HFC pur</td><td>675</td><td>-51.7</td><td>26-35</td></tr>
+            <tr><td>R22</td><td>HCFC</td><td>1810</td><td>-40.8</td><td>8-18</td></tr>
+            <tr><td>R134a</td><td>HFC pur</td><td>1430</td><td>-26.4</td><td>5-16</td></tr>
+            <tr><td>R290</td><td>HC nat.</td><td>3</td><td>-42.1</td><td>12-20</td></tr>
+            <tr><td>R407C</td><td>HFC mél.</td><td>1774</td><td>-43.6</td><td>8-20</td></tr>
+            <tr><td>R404A</td><td>HFC mél.</td><td>3922</td><td>-46.5</td><td>10-25</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INSTALLATION -->
+    <div class="screen" id="screen-installation">
+      <div class="sec-header">
+        <span class="sec-icon">🔧</span>
+        <div class="sec-title">INSTALLATION SPLIT</div>
+        <div class="sec-line"></div>
+      </div>
+      
+      <!-- TYPE SELECTOR -->
+      <div class="schema-tabs" style="margin-bottom:20px;">
+        <button class="stab active" onclick="selectInstallType(this,'split-mono')">Split Mono</button>
+        <button class="stab" onclick="selectInstallType(this,'split-multi')">Multi-Split</button>
+        <button class="stab" onclick="selectInstallType(this,'cassette')">Cassette</button>
+        <button class="stab" onclick="selectInstallType(this,'gainable')">Gainable</button>
+      </div>
+
+      <div id="install-split-mono">
+        <div class="steps-container">
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header">
+              <div class="step-num">1</div>
+              <div class="step-name">📍 Étude & Implantation</div>
+              <div class="step-arrow">▶</div>
+            </div>
+            <div class="step-body">
+              <ul>
+                <li>Calcul des déperditions thermiques (méthode simplifiée : 100 W/m² pour T° ext 35°C)</li>
+                <li>Choisir l'unité intérieure : hauteur minimale 2,2 m, dégagement 15 cm côtés et dessus</li>
+                <li>Éviter les obstacles devant le soufflage (lit, rideau, meuble à moins de 2m)</li>
+                <li>Distance max unité intérieure/extérieure : selon constructeur (généralement 15-25 m)</li>
+                <li>Dénivelé max : généralement 10-15 m (compresseur en bas = siphon requis)</li>
+                <li>Repérer le passage de la saignée ou des gaines de liaison</li>
+              </ul>
+              <div class="info-box">ℹ️ La position de l'unité extérieure doit permettre une évacuation d'air non obstruée et un entretien facile. Éviter plein soleil et zone de neige accumulation.</div>
+            </div>
+          </div>
+
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header">
+              <div class="step-num">2</div>
+              <div class="step-name">🏗️ Fixation Unité Intérieure</div>
+              <div class="step-arrow">▶</div>
+            </div>
+            <div class="step-body">
+              <ul>
+                <li>Fixer la platine murale avec des chevilles adaptées (8 ou 10mm selon poids)</li>
+                <li>Vérifier l'horizontalité avec un niveau à bulle (pente maxi 2mm/m vers l'évacuateur)</li>
+                <li>Percer le passage de gaines (diamètre 60-70 mm) avec légère inclinaison vers extérieur</li>
+                <li>Passer les liaisons frigorigènes, câble électrique et tuyau de condensat</li>
+                <li>Accrocher l'unité sur la platine — entendre le « clic » de verrouillage</li>
+              </ul>
+              <div class="warning-box">⚠️ Ne jamais percer dans un mur porteur sans vérification structurelle préalable !</div>
+            </div>
+          </div>
+
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header">
+              <div class="step-num">3</div>
+              <div class="step-name">🪛 Liaisons Frigorigènes</div>
+              <div class="step-arrow">▶</div>
+            </div>
+            <div class="step-body">
+              <ul>
+                <li>Couper les tubes avec coupe-tube (jamais scie) — ébavurer impérativement</li>
+                <li>Cintrer doucement avec cintreuse (rayon min = 3x Ø) — jamais à froid brutal</li>
+                <li>Évasements : utiliser un évaseur calibré, vérifier l'angle 45°, surface lisse</li>
+                <li>Diamètres standards R410A : ligne gaz 5/8" (15.88mm), ligne liquide 1/4" à 3/8"</li>
+                <li>Raccorder les écrous union — serrage au couple selon fabricant (généralement 18-55 Nm)</li>
+                <li>Isoler TOUTE la ligne gaz (mousse cellulaire 9-13mm, fixations tous les 40-50 cm)</li>
+              </ul>
+              <div class="warning-box">⚠️ Qualité du cuivre : tube cuivre déshydraté et dégraissé pour réfrigération uniquement (jamais plomberie)</div>
+            </div>
+          </div>
+
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header">
+              <div class="step-num">4</div>
+              <div class="step-name">🔌 Raccordements Électriques</div>
+              <div class="step-arrow">▶</div>
+            </div>
+            <div class="step-body">
+              <ul>
+                <li>Vérifier tension réseau avant branchement (230V ou 400V triphasé)</li>
+                <li>Câble de liaison : 3G1.5 ou 3G2.5 selon puissance (+ terre impérativement)</li>
+                <li>Respecter le code couleur du bornier : L1-L2-L3-N-PE selon schéma fabricant</li>
+                <li>Protection amont : disjoncteur différentiel 30mA type A (ou B si variateur)</li>
+                <li>Vérifier que la section de câble correspond au courant nominal (guide NFC 15-100)</li>
+                <li>Sectionneur de proximité obligatoire (réglementation française)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header">
+              <div class="step-num">5</div>
+              <div class="step-name">🌡️ Tirage au Vide</div>
+              <div class="step-arrow">▶</div>
+            </div>
+            <div class="step-body">
+              <ul>
+                <li>Raccorder la station de charge sur les vannes de service (vanne HP + BP)</li>
+                <li>Lancer la pompe à vide — viser minimum 500 microns (idéal &lt;200 microns)</li>
+                <li>Durée minimale : 30 min pour &lt;6m, 1h pour 6-15m de liaison</li>
+                <li>Test d'étanchéité statique : fermer les vannes, attendre 15 min — la pression ne doit pas remonter</li>
+                <li>Si la pression remonte : chercher la fuite avec détecteur électronique ou traceur</li>
+                <li>Après validation : ouvrir les vannes de service (liquide d'abord, puis gaz)</li>
+              </ul>
+              <div class="info-box">ℹ️ Utiliser une pompe à vide à 2 étages (min 2 m³/h). Ne jamais purger avec du fluide frigorigène !</div>
+            </div>
+          </div>
+
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header">
+              <div class="step-num">6</div>
+              <div class="step-name">✅ Mise en Service & Vérifications</div>
+              <div class="step-arrow">▶</div>
+            </div>
+            <div class="step-body">
+              <ul>
+                <li>Vérifier les pressions de service : HP (haute pression) et BP (basse pression)</li>
+                <li>Mesurer la température de soufflage (écart ΔT = 10-12°C en mode froid normal)</li>
+                <li>Contrôler le niveau de charge : sous-refroidissement (4-8°C) et surchauffe (5-8K)</li>
+                <li>Tester toutes les fonctions : froid/chaud/ventilation/minuterie/télécommande</li>
+                <li>Vérifier l'évacuation des condensats (test eau — écoulement libre)</li>
+                <li>Remplir la fiche d'intervention et attestation F-Gas obligatoire</li>
+              </ul>
+              <div class="warning-box">⚠️ Attestation de capacité F-Gas obligatoire pour manipuler les fluides frigorigènes en France !</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="install-split-multi" style="display:none;">
+        <div class="steps-container">
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header"><div class="step-num">1</div><div class="step-name">🔀 Principe Multi-Split</div><div class="step-arrow">▶</div></div>
+            <div class="step-body">
+              <ul>
+                <li>1 unité extérieure — 2 à 5 unités intérieures selon capacité</li>
+                <li>Chaque UI a son propre EEV (détendeur électronique) et capteurs</li>
+                <li>Tirage au vide obligatoire sur chaque branche</li>
+                <li>Adressage des UI selon notice (dip-switch ou menu)</li>
+                <li>Longueur équivalente totale : respecter les limites constructeur (ex: Daikin 4MXM : 70m total)</li>
+                <li>Déséquilibre de capacité : ne pas dépasser 130% de la capacité UE</li>
+              </ul>
+            </div>
+          </div>
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header"><div class="step-num">2</div><div class="step-name">🔗 Répartiteur Frigorigène</div><div class="step-arrow">▶</div></div>
+            <div class="step-body">
+              <ul>
+                <li>Installer le répartiteur (refnet joint) à plat ou vertical selon notice</li>
+                <li>Diamètres des branches : selon tableau constructeur (pas d'improvisation !)</li>
+                <li>Soudure brasée : argent 45% sous azote sec (pas d'oxydation interne)</li>
+                <li>Purge azote obligatoire pendant la soudure (débit 0.3 bar)</li>
+                <li>Tester chaque branche séparément avant assemblage final</li>
+              </ul>
+              <div class="info-box">ℹ️ Conserver le rapport de longueurs entre branches (différence max 40% entre branches)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="install-cassette" style="display:none;">
+        <div class="steps-container">
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header"><div class="step-num">1</div><div class="step-name">🏢 Cassette Plafonnier</div><div class="step-arrow">▶</div></div>
+            <div class="step-body">
+              <ul>
+                <li>Descente de plafond nécessaire (hauteur cassette + faux-plafond : min 30-35cm)</li>
+                <li>Repérage des poutres de structure avant perçage — utilisation d'un détecteur</li>
+                <li>4 points de suspension réglables (tiges filetées M10 minimum)</li>
+                <li>Nivellement impeccable : la cassette doit être parfaitement horizontale</li>
+                <li>Pompe de relevage de condensats si évacuation gravitaire impossible</li>
+                <li>Gabarit de découpe fourni par le fabricant pour le faux-plafond</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="install-gainable" style="display:none;">
+        <div class="steps-container">
+          <div class="step-card" onclick="toggleStep(this)">
+            <div class="step-header"><div class="step-num">1</div><div class="step-name">🌬️ Unité Gainable</div><div class="step-arrow">▶</div></div>
+            <div class="step-body">
+              <ul>
+                <li>Calcul de réseau de gaines : pression disponible statique (ex: 80-150 Pa)</li>
+                <li>Vitesse d'air dans les gaines : 3-5 m/s (résidentiel), &lt;8 m/s (tertiaire)</li>
+                <li>Isolation thermique ET acoustique des gaines (laine de verre 25 ou 45mm)</li>
+                <li>Bouches de soufflage : calculer la portée de jet (L = débit/surface bouche)</li>
+                <li>Reprise d'air : une seule reprise centralisée ou répartie selon plan</li>
+                <li>Équilibrage du réseau : registres de réglage sur chaque branche</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DÉPANNAGE -->
+    <div class="screen" id="screen-depannage">
+      <div class="sec-header">
+        <span class="sec-icon">⚡</span>
+        <div class="sec-title">DÉPANNAGE</div>
+        <div class="sec-line"></div>
+      </div>
+      
+      <div class="schema-tabs">
+        <button class="stab active" onclick="selectDepTab(this,'depan-clim')">Climatisation</button>
+        <button class="stab" onclick="selectDepTab(this,'depan-codes')">Codes Erreurs</button>
+        <button class="stab" onclick="selectDepTab(this,'depan-outils')">Outils diag.</button>
+      </div>
+
+      <div id="depan-clim">
+        <div class="trouble-grid">
+          <div class="trouble-item" onclick="toggleTrouble(this)">
+            <div class="trouble-hdr">
+              <div class="trouble-dot"></div>
+              <div class="trouble-name">Compresseur ne démarre pas</div>
+              <div class="trouble-tag tag-critical">CRITIQUE</div>
+            </div>
+            <div class="trouble-body">
+              <ol class="diag-steps">
+                <li>Vérifier alimentation électrique (tension, fusibles, disjoncteur)</li>
+                <li>Mesurer la résistance du bobinage moteur (continuité, isolement &gt;1MΩ)</li>
+                <li>Contrôler le condensateur de démarrage (capacimètre)</li>
+                <li>Vérifier le thermostat haute pression HP (ouvert = court-circuit interne)</li>
+                <li>Mesurer pressions : HP trop haute (&gt;seuil) ou BP trop basse (&lt;seuil) ?</li>
+                <li>Contrôler le crankcase heater (résistance carter) — 24h de chauffage si arrêt long</li>
+                <li>Vérifier la protection thermique interne du compresseur (contacteur bimétallique)</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="trouble-item" onclick="toggleTrouble(this)">
+            <div class="trouble-hdr">
+              <div class="trouble-dot warn"></div>
+              <div class="trouble-name">Haute pression trop élevée</div>
+              <div class="trouble-tag tag-warn">ATTENTION</div>
+            </div>
+            <div class="trouble-body">
+              <ol class="diag-steps">
+                <li>Vérifier propreté de l'échangeur condenseur (colmatage ?)</li>
+                <li>Contrôler le ventilateur condenseur (rotation, débit d'air)</li>
+                <li>Mesurer la température d'air entrant condenseur (trop chaud si confiné)</li>
+                <li>Vérifier l'absence de recyclage d'air chaud</li>
+                <li>Contrôler la charge frigorigène (surcharge = HP élevée)</li>
+                <li>Vérifier le clapet de non-retour (si présent)</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="trouble-item" onclick="toggleTrouble(this)">
+            <div class="trouble-hdr">
+              <div class="trouble-dot"></div>
+              <div class="trouble-name">Basse pression trop basse</div>
+              <div class="trouble-tag tag-critical">CRITIQUE</div>
+            </div>
+            <div class="trouble-body">
+              <ol class="diag-steps">
+                <li>Vérifier le filtre déshydrateur (colmatage = chute de pression)</li>
+                <li>Contrôler l'EEV ou le détendeur thermostatique (ouverture insuffisante)</li>
+                <li>Mesurer la surchauffe aspirante — surchauffe élevée = sous-charge ou détendeur fermé</li>
+                <li>Vérifier l'échangeur évaporateur (givrage, colmatage ?)</li>
+                <li>Contrôler la vanne à 4 voies (si PAC) — court-circuit interne ?</li>
+                <li>Chercher une fuite de fluide frigorigène (détecteur électronique)</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="trouble-item" onclick="toggleTrouble(this)">
+            <div class="trouble-hdr">
+              <div class="trouble-dot warn"></div>
+              <div class="trouble-name">Givre sur l'évaporateur</div>
+              <div class="trouble-tag tag-warn">ATTENTION</div>
+            </div>
+            <div class="trouble-body">
+              <ol class="diag-steps">
+                <li>Vérifier le filtre à air intérieur (colmaté = débit d'air insuffisant)</li>
+                <li>Contrôler le ventilateur évaporateur (rotation, vitesse)</li>
+                <li>Mesurer la BP : trop basse = sous-charge ou détendeur fermé</li>
+                <li>Vérifier la sonde de dégivrage (résistance, continuité)</li>
+                <li>Contrôler le cycle de dégivrage (fréquence, durée)</li>
+                <li>Mesurer la température d'air entrant (trop basse en mode froid)</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="trouble-item" onclick="toggleTrouble(this)">
+            <div class="trouble-hdr">
+              <div class="trouble-dot ok"></div>
+              <div class="trouble-name">Mauvais rendement froid</div>
+              <div class="trouble-tag tag-info">INFO</div>
+            </div>
+            <div class="trouble-body">
+              <ol class="diag-steps">
+                <li>Mesurer ΔT soufflage/reprise (doit être 10-14°C en mode froid)</li>
+                <li>Contrôler la charge de fluide (surchauffe + sous-refroidissement)</li>
+                <li>Nettoyer filtres, évaporateur et condenseur</li>
+                <li>Vérifier étanchéité du local (fuites d'air, isolation)</li>
+                <li>Contrôler le bypass de fluide (clapet détendeur abîmé)</li>
+                <li>Vérifier la puissance absorbée (compressor efficiency)</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="trouble-item" onclick="toggleTrouble(this)">
+            <div class="trouble-hdr">
+              <div class="trouble-dot warn"></div>
+              <div class="trouble-name">Fuite de condensats</div>
+              <div class="trouble-tag tag-warn">ATTENTION</div>
+            </div>
+            <div class="trouble-body">
+              <ol class="diag-steps">
+                <li>Vérifier la pente du bac à condensats (doit être 1-2% vers l'évacuation)</li>
+                <li>Contrôler le bac (colmaté par algues ou calcaire — nettoyer avec biocide)</li>
+                <li>Tester l'évacuation (verser 1L d'eau dans le bac)</li>
+                <li>Vérifier la pompe de relevage si présente (flotteur, puissance)</li>
+                <li>Contrôler les raccords de tuyauterie d'évacuation (fuite, déconnexion)</li>
+                <li>Vérifier le givrage de l'évaporateur (givre = eau lors dégivrage)</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="depan-codes" style="display:none;">
+        <div style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:12px;overflow:hidden;margin-bottom:12px;">
+          <table class="ref-table">
+            <thead><tr><th>CODE</th><th>MARQUE</th><th>SIGNIFICATION</th><th>SOLUTION</th></tr></thead>
+            <tbody>
+              <tr><td>E1</td><td>Daikin</td><td>Prot. HP</td><td>Vérifier condenseur</td></tr>
+              <tr><td>E3</td><td>Daikin</td><td>Prot. BP</td><td>Vérifier charge</td></tr>
+              <tr><td>E4</td><td>Daikin</td><td>Prot. thermique</td><td>Vérifier charge moteur</td></tr>
+              <tr><td>E5</td><td>Daikin</td><td>Surint. compresseur</td><td>Vérifier alimentation</td></tr>
+              <tr><td>E7</td><td>Daikin</td><td>Ventilateur UE</td><td>Remplacer moteur vent.</td></tr>
+              <tr><td>E9</td><td>Daikin</td><td>Vanne 4 voies</td><td>Contrôler vanne</td></tr>
+              <tr><td>F3</td><td>Daikin</td><td>Sonde HP</td><td>Remplacer sonde</td></tr>
+              <tr><td>F6</td><td>Daikin</td><td>Sonde UI</td><td>Vérifier connecteur</td></tr>
+              <tr><td>H6</td><td>Daikin</td><td>Capteur position</td><td>Changer capteur</td></tr>
+              <tr><td>P1</td><td>Mitsubishi</td><td>Sous-tension</td><td>Vérifier réseau</td></tr>
+              <tr><td>P4</td><td>Mitsubishi</td><td>Prot. inverseur</td><td>Vérifier radiateur</td></tr>
+              <tr><td>E6</td><td>Mitsubishi</td><td>Com. UI↔UE</td><td>Vérifier câble liaison</td></tr>
+              <tr><td>F1</td><td>Mitsubishi</td><td>Sonde T°evap.</td><td>Remplacer sonde</td></tr>
+              <tr><td>A0</td><td>Hitachi</td><td>Prot. HP</td><td>Nettoyer condenseur</td></tr>
+              <tr><td>A1</td><td>Hitachi</td><td>Prot. BP</td><td>Contrôler charge</td></tr>
+              <tr><td>C9</td><td>LG</td><td>Com. ligne</td><td>Vérifier câblage</td></tr>
+              <tr><td>CH1</td><td>LG</td><td>Sonde intérieure</td><td>Remplacer NTC</td></tr>
+              <tr><td>E4</td><td>Gree</td><td>T° échangeur</td><td>Vérifier charge</td></tr>
+              <tr><td>F0</td><td>Gree</td><td>Inverseur</td><td>Vérifier IGBT</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="depan-outils" style="display:none;">
+        <div class="tips-list">
+          <div class="tip-item">
+            <div class="tip-title">🌡️ Manifold (Station de charge)</div>
+            Mesure HP/BP simultanées. HP normale R410A en froid : 15-20 bar. BP normale : 6-9 bar selon T° ambiante. Surchauffe = T°asp - T°sat(BP). Sous-refroidissement = T°sat(HP) - T°liquide sortie condenseur.
+          </div>
+          <div class="tip-item success">
+            <div class="tip-title">📊 Pince ampèremétrique</div>
+            Mesurer le courant de démarrage (3-8x In) et courant nominal. Un compresseur tirant &gt;110% du courant nominal = usure ou problème électrique. Mesurer les 3 phases en triphasé.
+          </div>
+          <div class="tip-item hot">
+            <div class="tip-title">🔍 Détecteur de fuite</div>
+            Électronique : sensibilité 5g/an pour HFC. Infrarouge : idéal pour R32. UV + colorant : pour confirmation visuelle. Toujours vérifier sous les raccords, sur les vannes et aux soudures.
+          </div>
+          <div class="tip-item">
+            <div class="tip-title">💻 Ordinateur de liaison (Daikin PC-Tool, etc.)</div>
+            Lecture des codes erreurs historiques, valeurs en temps réel (sondes, pressions calculées), réglages des paramètres EEV, graphes de tendance, test des actionneurs.
+          </div>
+          <div class="tip-item danger">
+            <div class="tip-title">⚡ Analyseur de réseau</div>
+            Mesurer qualité du réseau : tension (230V ±10%), harmoniques (&lt;8%), symétrie des phases (&lt;2% déséquilibre), cos φ. Indispensable avant de remplacer un variateur.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHEMAS -->
+    <div class="screen" id="screen-schemas">
+      <div class="sec-header">
+        <span class="sec-icon">📐</span>
+        <div class="sec-title">SCHÉMAS TECHNIQUES</div>
+        <div class="sec-line"></div>
+      </div>
+      <div class="schema-tabs">
+        <button class="stab active" onclick="selectSchema(this,'schema-cycle')">Cycle Frigo.</button>
+        <button class="stab" onclick="selectSchema(this,'schema-elec')">Électrique</button>
+        <button class="stab" onclick="selectSchema(this,'schema-pac')">PAC Reversible</button>
+        <button class="stab" onclick="selectSchema(this,'schema-mollier')">Diag. Mollier</button>
+      </div>
+
+      <div id="schema-cycle">
+        <div class="schema-view">
+          <div class="schema-canvas">
+<pre style="color:var(--accent-frost);line-height:1.9;font-size:11px;">
+  ┌─────────────────────────────────────────────────────────┐
+  │             CYCLE FRIGORIFIQUE DE BASE                  │
+  │                   (Mode Froid)                          │
+  └─────────────────────────────────────────────────────────┘
+
+  HAUTE PRESSION ════════════════════════════════════════
+  
+  ┌──────────────┐    HP liquide    ┌──────────────────┐
+  │  COMPRESSEUR │ ────────────────▶│   CONDENSEUR     │
+  │   (Moteur)   │                  │ (Rejet chaleur)  │
+  │  ↑ BP gaz   │ ◀────────────────│  → Extérieur     │
+  │  ↓ HP gaz   │    HP gaz        └──────────────────┘
+  └──────────────┘                          │
+          ▲                                 │ sous-refroidi
+          │                                 ▼
+          │                   ┌─────────────────────┐
+  BASSE PRESSION              │  FILTRE DÉSHYDRATEUR│
+  ════════════════            │  + VOYANT LIQUIDE   │
+          │                   └─────────────────────┘
+  ┌──────────────┐                          │
+  │  ÉVAPORATEUR │◀────────────────         │
+  │ (Absorption  │  BP liquide+gaz │         ▼
+  │   chaleur)   │                 │  ┌───────────────┐
+  │  → Intérieur │                 └──│   DÉTENDEUR   │
+  └──────────────┘                    │  (EEV / TXV)  │
+          │                           └───────────────┘
+          │ BP gaz surchauffé
+          └──────────────────────────▶ Retour compresseur
+
+  ═══ HP : Haute Pression (~20 bar R410A) — État LIQUIDE → GAZ
+  ─── BP : Basse Pression (~9 bar R410A)  — État GAZ surchauffé
+</pre>
+          </div>
+          <div class="schema-legend">
+            <div class="legend-item"><div class="legend-color" style="background:#00d4ff;"></div>Fluide liquide (HP)</div>
+            <div class="legend-item"><div class="legend-color" style="background:#ff6b35;"></div>Gaz surchauffé (HP)</div>
+            <div class="legend-item"><div class="legend-color" style="background:#00ff88;"></div>Mélange BP</div>
+            <div class="legend-item"><div class="legend-color" style="background:#7ee8fa;"></div>Gaz froid (BP)</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="schema-elec" style="display:none;">
+        <div class="schema-view">
+          <div class="schema-canvas">
+<pre style="color:var(--accent-frost);font-size:11px;line-height:1.9;">
+  ┌─────────────────────────────────────────────────────┐
+  │        SCHÉMA ÉLECTRIQUE SPLIT MONO (230V)          │
+  └─────────────────────────────────────────────────────┘
+
+  RÉSEAU 230V~
+  L ────┬────[Disj. 16A]────[Sectionneur]────┐
+        │                                     │
+  N ────┴────────────────────────────────────┐│
+                                              ││
+  ┌─────────────── UNITÉ EXTÉRIEURE ──────────▼▼────────────┐
+  │                                                          │
+  │  ┌────────────┐    ┌──────────────┐    ┌─────────────┐  │
+  │  │  PCB       │    │  INVERSEUR   │    │ COMPRESSEUR │  │
+  │  │ Principale │───▶│  (IPM/IGBT)  │───▶│  (BLDC)     │  │
+  │  │            │    └──────────────┘    └─────────────┘  │
+  │  │            │    ┌──────────────┐                      │
+  │  │            │───▶│  VENTILATEUR │                      │
+  │  │            │    │  UE (DC Fan) │                      │
+  │  └────────────┘    └──────────────┘                      │
+  │        │                                                  │
+  │        │ (3 fils : L - N - COM)                           │
+  └────────┼──────────────────────────────────────────────────┘
+           │
+  ┌────────┼──────────── UNITÉ INTÉRIEURE ────────────────────┐
+  │        ▼                                                   │
+  │  ┌────────────┐    ┌──────────────┐    ┌───────────────┐  │
+  │  │  PCB       │───▶│  VENTILATEUR │    │  VANNE        │  │
+  │  │ Commande   │    │  UI (StepMot)│    │  EEV / TXV    │  │
+  │  │            │    └──────────────┘    └───────────────┘  │
+  │  │            │    ┌──────────────┐    ┌───────────────┐  │
+  │  │            │───▶│  MOTEURS     │    │  AFFICHEUR    │  │
+  │  │            │    │  VOLETS      │    │  + RÉCEPTEUR  │  │
+  │  └────────────┘    └──────────────┘    └───────────────┘  │
+  │        ▲                                                   │
+  │  ┌─────┴──────────────────────────────────────────────┐   │
+  │  │ SONDES : T°amb | T°évap | T°aspiration | Humidité  │   │
+  └──┴────────────────────────────────────────────────────┴───┘
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="schema-pac" style="display:none;">
+        <div class="schema-view">
+          <div class="schema-canvas">
+<pre style="color:var(--accent-frost);font-size:11px;line-height:1.9;">
+  ┌─────────────────────────────────────────────────────┐
+  │         PAC RÉVERSIBLE — VANNE 4 VOIES              │
+  └─────────────────────────────────────────────────────┘
+
+  MODE FROID (été)              MODE CHAUD (hiver)
+  
+  VANNE 4 VOIES                 VANNE 4 VOIES
+  Position FROID                Position CHAUD
+  
+  Compresseur                   Compresseur
+      │ HP                           │ HP
+      ▼                              ▼
+  [V4V Pos.FROID] ──────────▶  [V4V Pos.CHAUD] ─────────▶
+      │                     │        │                    │
+      ▼                     │        ▼                    │
+  CONDENSEUR             UE │    ÉVAPORATEUR          UE │
+  (EXTÉRIEUR)               │    (EXTÉRIEUR)              │
+      │                     │        │                    │
+      ▼                     │        ▼                    │
+  DÉTENDEUR               ◀─┘    DÉTENDEUR              ◀─┘
+      │                               │
+      ▼                               ▼
+  ÉVAPORATEUR                    CONDENSEUR
+  (INTÉRIEUR)                    (INTÉRIEUR)
+  → Soufflage FROID              → Soufflage CHAUD
+
+  ╔══════════════════════════════════════════════════════╗
+  ║  La vanne 4 voies inverse le sens de circulation     ║
+  ║  du fluide. En mode chaud : l'extérieur est source   ║
+  ║  froide, l'intérieur est émetteur de chaleur         ║
+  ╚══════════════════════════════════════════════════════╝
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="schema-mollier" style="display:none;">
+        <div class="schema-view">
+          <div class="schema-canvas">
+<pre style="color:var(--accent-frost);font-size:11px;line-height:1.8;">
+  DIAGRAMME DE MOLLIER (h,log P) — R410A
+  
+  log P (bar)
+    │
+ 25 │- - - - - - - - - - - - ●3(HP)──●2
+    │                      ╱          │  Sous-
+    │              ╔══════╝    Cond.   │refroid.
+ 20 │              ║       ●4          │
+    │              ║    ╱              │
+    │  Courbe      ║ ╱   ← Détente    │
+ 10 │  saturation  ●1                 │
+    │  ╱─────────╲ │                  │
+  7 │ /    Zone    │  BP              ●2' Asp.
+    │ biph.  surch.│                  │
+    │─────────────●1────────────────▶ h (kJ/kg)
+           
+  POINTS CLÉS :
+  1 → 2 : Compression (adiabatique)  — compresseur
+  2 → 3 : Désurchauffe → 3 : Cond.  — condenseur  
+  3 → 4 : Sous-refroidissement       — fin condenseur
+  4 → 1 : Détente isenthalpique     — détendeur
+  1 : Entrée compresseur (gaz surch.)
+  
+  GRANDEURS MESURABLES :
+  • Surchauffe = T1 - T sat(BP)  → réglage détendeur
+  • Sous-refroidissement = T sat(HP) - T3 → charge
+  • COP = (h2-h1) / (h2-h4)     → efficacité
+</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CIRCUITS -->
+    <div class="screen" id="screen-circuits">
+      <div class="sec-header">
+        <span class="sec-icon">🌡️</span>
+        <div class="sec-title">CONTRÔLE CIRCUITS</div>
+        <div class="sec-line"></div>
+      </div>
+
+      <div class="circuit-cards">
+        <div class="circuit-card" onclick="toggleCircuit(this)">
+          <div class="circuit-hdr">
+            <div class="circuit-ico">📊</div>
+            <div class="circuit-name">Paramètres de Service R410A</div>
+            <div class="step-arrow">▶</div>
+          </div>
+          <div class="circuit-body">
+            <div class="params-grid">
+              <div class="param-item"><div class="param-label">BP NORMAL</div><div class="param-value">8-11 <span class="param-unit">bar</span></div></div>
+              <div class="param-item"><div class="param-label">HP NORMAL</div><div class="param-value">18-24 <span class="param-unit">bar</span></div></div>
+              <div class="param-item"><div class="param-label">SURCHAUFFE</div><div class="param-value">5-8 <span class="param-unit">K</span></div></div>
+              <div class="param-item"><div class="param-label">SOUS-REFR.</div><div class="param-value">4-8 <span class="param-unit">K</span></div></div>
+              <div class="param-item"><div class="param-label">T° ASP.</div><div class="param-value">10-20 <span class="param-unit">°C</span></div></div>
+              <div class="param-item"><div class="param-label">ΔT ÉVAP.</div><div class="param-value">10-14 <span class="param-unit">°C</span></div></div>
+            </div>
+            <div class="info-box">ℹ️ Valeurs pour T°ext = 35°C / T°int = 27°C - Ces valeurs varient avec les conditions</div>
+          </div>
+        </div>
+
+        <div class="circuit-card" onclick="toggleCircuit(this)">
+          <div class="circuit-hdr">
+            <div class="circuit-ico">🔬</div>
+            <div class="circuit-name">Paramètres R32</div>
+            <div class="step-arrow">▶</div>
+          </div>
+          <div class="circuit-body">
+            <div class="params-grid">
+              <div class="param-item"><div class="param-label">BP NORMAL</div><div class="param-value">10-13 <span class="param-unit">bar</span></div></div>
+              <div class="param-item"><div class="param-label">HP NORMAL</div><div class="param-value">24-30 <span class="param-unit">bar</span></div></div>
+              <div class="param-item"><div class="param-label">SURCHAUFFE</div><div class="param-value">5-8 <span class="param-unit">K</span></div></div>
+              <div class="param-item"><div class="param-label">T° ASP. MAX</div><div class="param-value">120 <span class="param-unit">°C</span></div></div>
+              <div class="param-item"><div class="param-label">CLASSEMENT</div><div class="param-value">A2L <span class="param-unit">léger.</span></div></div>
+              <div class="param-item"><div class="param-label">GWP</div><div class="param-value">675 <span class="param-unit">CO2eq</span></div></div>
+            </div>
+            <div class="warning-box">⚠️ R32 est légèrement inflammable (A2L). Ventilation locale obligatoire en installation confinée !</div>
+          </div>
+        </div>
+
+        <div class="circuit-card" onclick="toggleCircuit(this)">
+          <div class="circuit-hdr">
+            <div class="circuit-ico">🧮</div>
+            <div class="circuit-name">Calcul de Surchauffe & Sous-refroidissement</div>
+            <div class="step-arrow">▶</div>
+          </div>
+          <div class="circuit-body">
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+              <div style="background:rgba(0,212,255,0.05);border-radius:8px;padding:12px;margin-bottom:10px;font-family:var(--font-mono);font-size:12px;">
+                <div style="color:var(--accent-ice);margin-bottom:8px;">SURCHAUFFE ASPIRANTE :</div>
+                SH = T°aspiration mesurée − T°saturation (à P_BP)<br>
+                Ex: T°asp = 15°C, BP = 9.1 bar → T°sat = 10°C → SH = 5K ✓<br><br>
+                <div style="color:var(--accent-ice);margin-bottom:8px;">SOUS-REFROIDISSEMENT :</div>
+                SC = T°saturation (à P_HP) − T°liquide sortie cond.<br>
+                Ex: HP = 23 bar → T°sat = 55°C, T°liq = 49°C → SC = 6K ✓
+              </div>
+              <div style="font-size:12px;padding:8px;background:rgba(255,215,0,0.05);border-radius:8px;border-left:3px solid var(--accent-yellow);">
+                📱 <strong>Astuce terrain :</strong> Applications mobile de table de saturation (RefCalc, REFPROP mobile) permettent la lecture directe depuis la pression mesurée.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="circuit-card" onclick="toggleCircuit(this)">
+          <div class="circuit-hdr">
+            <div class="circuit-ico">⚖️</div>
+            <div class="circuit-name">Contrôle de Charge (Mise en charge)</div>
+            <div class="step-arrow">▶</div>
+          </div>
+          <div class="circuit-body">
+            <ul style="list-style:none;padding:0;">
+              <li style="padding:8px 0;border-bottom:1px solid rgba(0,212,255,0.05);font-size:13px;color:var(--text-secondary);">▸ Récupérer le fluide existant avant toute opération (récupérateur certifié)</li>
+              <li style="padding:8px 0;border-bottom:1px solid rgba(0,212,255,0.05);font-size:13px;color:var(--text-secondary);">▸ Effectuer un vide parfait (&lt;200µ) avant la mise en charge</li>
+              <li style="padding:8px 0;border-bottom:1px solid rgba(0,212,255,0.05);font-size:13px;color:var(--text-secondary);">▸ Mélanges zéotropiques (R410A, R407C) : toujours charger en phase liquide</li>
+              <li style="padding:8px 0;border-bottom:1px solid rgba(0,212,255,0.05);font-size:13px;color:var(--text-secondary);">▸ Peser la charge (balance électronique ±1g) selon la plaque signalétique</li>
+              <li style="padding:8px 0;border-bottom:1px solid rgba(0,212,255,0.05);font-size:13px;color:var(--text-secondary);">▸ Complément de charge : ajouter progressivement 50-100g à la fois</li>
+              <li style="padding:8px 0;font-size:13px;color:var(--text-secondary);">▸ Enregistrer la quantité totale sur l'attestation F-Gas</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRIGO -->
+    <div class="screen" id="screen-frigo">
+      <div class="sec-header">
+        <span class="sec-icon">🧊</span>
+        <div class="sec-title">RÉFRIGÉRATEURS & CONGÉLATEURS</div>
+        <div class="sec-line"></div>
+      </div>
+
+      <div class="frigo-grid">
+        <div class="frigo-card">
+          <div class="f-icon">🥶</div>
+          <div class="f-title">Congélateur</div>
+          <div class="f-temp">-18°C</div>
+          <div class="f-desc">Température réglementaire minimum</div>
+        </div>
+        <div class="frigo-card">
+          <div class="f-icon">🌡️</div>
+          <div class="f-title">Réfrigérateur</div>
+          <div class="f-temp">+3°C</div>
+          <div class="f-desc">Zone la plus froide (bas)</div>
+        </div>
+        <div class="frigo-card">
+          <div class="f-icon">🧺</div>
+          <div class="f-title">Bac légumes</div>
+          <div class="f-temp">8-10°C</div>
+          <div class="f-desc">Zone haute humidité</div>
+        </div>
+        <div class="frigo-card">
+          <div class="f-icon">🚪</div>
+          <div class="f-title">Balconnets porte</div>
+          <div class="f-temp">10-12°C</div>
+          <div class="f-desc">Zone la moins froide</div>
+        </div>
+      </div>
+
+      <div class="sec-header">
+        <span class="sec-icon">🔍</span>
+        <div class="sec-title">PANNES COURANTES</div>
+        <div class="sec-line"></div>
+      </div>
+      <div class="trouble-grid" style="margin-bottom:20px;">
+        <div class="trouble-item" onclick="toggleTrouble(this)">
+          <div class="trouble-hdr">
+            <div class="trouble-dot"></div>
+            <div class="trouble-name">Réfrigérateur ne refroidit plus</div>
+            <div class="trouble-tag tag-critical">CRITIQUE</div>
+          </div>
+          <div class="trouble-body">
+            <ol class="diag-steps">
+              <li>Vérifier alimentation et fusibles</li>
+              <li>Écouter le démarrage compresseur (click + ronronnement)</li>
+              <li>Tester le relais de démarrage PTC et la thermistance</li>
+              <li>Vérifier le thermostat (court-circuiter pour test)</li>
+              <li>Contrôler l'évaporateur (givrage anormal = dégivrage défectueux)</li>
+              <li>Mesurer les pressions si accessible (R134a ou R600a)</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="trouble-item" onclick="toggleTrouble(this)">
+          <div class="trouble-hdr">
+            <div class="trouble-dot warn"></div>
+            <div class="trouble-name">Givre excessif au fond du frigo</div>
+            <div class="trouble-tag tag-warn">ATTENTION</div>
+          </div>
+          <div class="trouble-body">
+            <ol class="diag-steps">
+              <li>Vérifier le joint de porte (test papier — doit pincer)</li>
+              <li>Contrôler la résistance de dégivrage (ohmmètre)</li>
+              <li>Tester le thermostat de dégivrage (bi-métal 8-13°C)</li>
+              <li>Vérifier la minuterie de dégivrage (minuterie électronique)</li>
+              <li>Contrôler le drain de dégivrage (dégiver à l'eau chaude si bouché)</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="trouble-item" onclick="toggleTrouble(this)">
+          <div class="trouble-hdr">
+            <div class="trouble-dot warn"></div>
+            <div class="trouble-name">Congélateur No-Frost ne congèle plus</div>
+            <div class="trouble-tag tag-warn">ATTENTION</div>
+          </div>
+          <div class="trouble-body">
+            <ol class="diag-steps">
+              <li>Décongeler manuellement 24h — souvent un blocage de givre</li>
+              <li>Vérifier le ventilateur interne (bruit, rotation)</li>
+              <li>Tester la carte électronique (DEL, codes erreurs)</li>
+              <li>Contrôler le cycle de dégivrage (minuterie ou sonde)</li>
+              <li>Mesurer BP et HP si accès possible</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-header">
+        <span class="sec-icon">💡</span>
+        <div class="sec-title">TRUCS & ASTUCES TERRAIN</div>
+        <div class="sec-line"></div>
+      </div>
+      <div class="tips-list">
+        <div class="tip-item success">
+          <div class="tip-title">🔧 Test PTC relais de démarrage</div>
+          Secouer le relais PTC : pas de bruit = OK. Un bruit = pièce cassée interne. Mesurer à froid : 20-50Ω. À chaud (après démarrage) : résistance très élevée (coupure automatique).
+        </div>
+        <div class="tip-item">
+          <div class="tip-title">🌡️ Test thermostat mécanique</div>
+          Déconnecter et court-circuiter les bornes : si compresseur démarre = thermostat HS. Mesurer la résistance : &lt;1Ω = fermé (OK en position froide), infini = ouvert (normal position max).
+        </div>
+        <div class="tip-item hot">
+          <div class="tip-title">❄️ Nettoyage condenseur (arrière/dessous)</div>
+          Grille arrière ou serpentin dessous : aspirer à la brosse tous les 12 mois. Un condenseur encrassé augmente la consommation de 30% et réduit la durée de vie compresseur.
+        </div>
+        <div class="tip-item danger">
+          <div class="tip-title">⚠️ R600a (Isobutane) — Précautions IMPERATIF</div>
+          Fluide INFLAMMABLE ! Jamais de flamme nue, étincelle ou outil non anti-déflagrant. Ventiler avant toute intervention. Charge &lt;150g généralement. En cas de fuite : évacuer et ventiler immédiatement.
+        </div>
+        <div class="tip-item">
+          <div class="tip-title">💧 Eau sous le réfrigérateur</div>
+          Drain d'évacuation des condensats bouché. Déboucher avec une tige fine ou eau chaude. Nettoyer le bac de récupération sous le compresseur. Vérifier aussi l'étanchéité du joint porte.
+        </div>
+        <div class="tip-item success">
+          <div class="tip-title">📱 Code test affichage Samsung/LG</div>
+          Samsung : maintenir Congélation + Froid 8s → mode test. LG : maintenir Freezer + ICE PLUS 5s. Permet de forcer le dégivrage, lire températures réelles et codes erreurs internes.
+        </div>
+      </div>
+    </div>
+
+    <!-- QCM -->
+    <div class="screen" id="screen-qcm">
+      <div class="qcm-header">
+        <div class="qcm-score" id="qcm-score">0/0</div>
+        <div class="qcm-label">SCORE QCM TECHNIQUE</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="qcm-progress" style="width:0%"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);">Question <span id="q-current">1</span> / <span id="q-total">20</span></div>
+      </div>
+
+      <div id="question-area"></div>
+
+      <div class="qcm-controls">
+        <button class="btn-secondary" onclick="prevQuestion()">◀ PRÉC.</button>
+        <button class="btn-primary" onclick="nextQuestion()">SUIV. ▶</button>
+        <button class="btn-secondary" onclick="resetQCM()">🔄 RESET</button>
+      </div>
+    </div>
+
+    <!-- CHATBOT -->
+    <div class="screen" id="screen-chatbot">
+      <div class="chat-container">
+        <div class="sec-header" style="margin-bottom:8px;">
+          <span class="sec-icon">🤖</span>
+          <div class="sec-title">IA TECHNICIEN</div>
+          <div style="flex:1;"></div>
+          <div style="font-size:10px;color:var(--accent-success);font-family:var(--font-mono);">● IA ACTIVE</div>
+        </div>
+
+        <div class="chat-quick">
+          <button class="quick-btn" onclick="quickChat('Quelles sont les pressions normales R410A ?')">🌡️ Pressions R410A</button>
+          <button class="quick-btn" onclick="quickChat('Comment diagnostiquer une fuite frigorigène ?')">🔍 Fuite frigo.</button>
+          <button class="quick-btn" onclick="quickChat('Comment calculer la surchauffe ?')">🧮 Surchauffe</button>
+          <button class="quick-btn" onclick="quickChat('Erreur E1 Daikin, que faire ?')">⚠️ Code E1 Daikin</button>
+          <button class="quick-btn" onclick="quickChat('Procedure tirage au vide complet')">💨 Vide</button>
+          <button class="quick-btn" onclick="quickChat('Règles F-Gas France 2024')">📋 F-Gas</button>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <div class="msg bot">
+            <div class="msg-bubble">
+              👋 Bonjour Technicien ! Je suis votre assistant IA spécialisé en <strong>froid et climatisation</strong>.<br><br>
+              Posez-moi vos questions techniques : dépannage, calculs, normes F-Gas, codes erreurs, procédures d'installation...<br><br>
+              🔧 Je suis là pour vous aider sur le terrain !
+            </div>
+            <div class="msg-time">Prêt • Spécialiste Froid & Clim</div>
+          </div>
+        </div>
+
+        <div class="chat-input-wrap">
+          <textarea class="chat-input" id="chat-input" placeholder="Posez votre question technique..." rows="1" 
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+          <button class="chat-send" onclick="sendChat()">▶</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bottom-nav">
+    <button class="nav-btn active" data-screen="home" onclick="switchNav(this,'home')">
+      <span class="nav-icon">🏠</span>Accueil
+    </button>
+    <button class="nav-btn" data-screen="installation" onclick="switchNav(this,'installation')">
+      <span class="nav-icon">🔧</span>Install.
+    </button>
+    <button class="nav-btn" data-screen="depannage" onclick="switchNav(this,'depannage')">
+      <span class="nav-icon">⚡</span>Dépan.
+    </button>
+    <button class="nav-btn" data-screen="schemas" onclick="switchNav(this,'schemas')">
+      <span class="nav-icon">📐</span>Schémas
+    </button>
+    <button class="nav-btn" data-screen="qcm" onclick="switchNav(this,'qcm')">
+      <span class="nav-icon">📝</span>QCM
+    </button>
+    <button class="nav-btn" data-screen="chatbot" onclick="switchNav(this,'chatbot')">
+      <span class="nav-icon">🤖</span>IA Chat
+    </button>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FULLSCREEN -->
+<button class="fullscreen-btn" onclick="toggleFullscreen()" title="Plein écran">⛶</button>
+
+<script>
+// ======================== TIME ========================
+function updateTime(){
+  const now=new Date();
+  document.getElementById('time-display').textContent=
+    now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+}
+updateTime();setInterval(updateTime,30000);
+
+// ======================== NAVIGATION ========================
+function switchNav(btn, screen){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  showScreen(screen);
+}
+function goTo(screen){
+  showScreen(screen);
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.screen===screen);
+  });
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const s=document.getElementById('screen-'+id);
+  if(s)s.classList.add('active');
+}
+
+// ======================== TOGGLES ========================
+function toggleStep(card){card.classList.toggle('open');}
+function toggleTrouble(item){item.classList.toggle('open');}
+function toggleCircuit(card){card.classList.toggle('open');}
+
+// ======================== INSTALL TABS ========================
+function selectInstallType(btn, type){
+  document.querySelectorAll('#screen-installation .stab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['split-mono','split-multi','cassette','gainable'].forEach(t=>{
+    const el=document.getElementById('install-'+t);
+    if(el)el.style.display=t===type?'block':'none';
+  });
+}
+function selectDepTab(btn, tab){
+  document.querySelectorAll('#screen-depannage .stab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['depan-clim','depan-codes','depan-outils'].forEach(t=>{
+    const el=document.getElementById(t);
+    if(el)el.style.display=t===tab?'block':'none';
+  });
+}
+function selectSchema(btn, id){
+  document.querySelectorAll('#screen-schemas .stab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['schema-cycle','schema-elec','schema-pac','schema-mollier'].forEach(s=>{
+    const el=document.getElementById(s);
+    if(el)el.style.display=s===id?'block':'none';
+  });
+}
+
+// ======================== QCM DATA ========================
+const questions=[
+  {cat:"CYCLE FRIGORIFIQUE",q:"Dans un cycle frigorifique, quel composant comprime le gaz réfrigérant ?",opts:["Détendeur","Condenseur","Compresseur","Évaporateur"],a:2,exp:"Le compresseur aspire les vapeurs basses pression de l'évaporateur et les refoule en haute pression vers le condenseur. C'est le 'cœur' du cycle."},
+  {cat:"FLUIDES",q:"Quelle est la pression de basse pression approximative du R410A à une température d'évaporation de 5°C ?",opts:["3 bar","6 bar","8.5 bar","15 bar"],a:2,exp:"À 5°C d'évaporation, la pression de saturation du R410A est d'environ 8.5-9 bar. Cette valeur est à lire sur une table de saturation."},
+  {cat:"INSTALLATION",q:"Quelle est la pente minimale recommandée pour un bac de condensats ?",opts:["0.5%","1-2%","5%","Aucune pente"],a:1,exp:"Le bac de condensats doit avoir une pente de 1 à 2% minimum vers le drain d'évacuation pour assurer un écoulement gravitaire correct."},
+  {cat:"ÉLECTRICITÉ",q:"Quel type de disjoncteur différentiel est recommandé pour un circuit de climatisation avec variateur de fréquence ?",opts:["Type AC","Type A","Type B","Type F"],a:2,exp:"Le type B est recommandé avec les variateurs (onduleurs) car il détecte les courants de défaut continus et pulsés, contrairement au type A ou AC."},
+  {cat:"F-GAS",q:"En France, qui peut manipuler les fluides frigorigènes ?",opts:["Tout électricien","Technicien avec attestation capacité","Tout professionnel du BTP","Seulement les ingénieurs"],a:1,exp:"L'attestation de capacité (ex-attestation d'aptitude) est obligatoire en France pour manipuler les fluides frigorigènes selon le règlement F-Gaz européen."},
+  {cat:"DÉPANNAGE",q:"Une surchauffe aspirante trop élevée (>12K) indique généralement :",opts:["Surcharge de fluide","Manque de fluide ou détendeur fermé","Condenseur colmaté","Ventilateur HS"],a:1,exp:"Une surchauffe élevée signifie que le gaz est très chaud à l'aspiration = peu de liquide arrive à l'évaporateur. Causes : manque de charge, détendeur trop fermé, filtre bouché."},
+  {cat:"FLUIDES",q:"Quel est le GWP (Global Warming Potential) du R32 ?",opts:["3","675","1430","2088"],a:1,exp:"Le R32 a un GWP de 675, soit environ 3 fois moins que le R410A (2088). C'est pour cela qu'il remplace progressivement le R410A dans les climatiseurs résidentiels."},
+  {cat:"CYCLE FRIGORIFIQUE",q:"Le sous-refroidissement est calculé comme :",opts:["T°sat(HP) − T°liquide","T°aspiration − T°sat(BP)","T°condenseur − T°évaporateur","HP − BP en bar"],a:0,exp:"Sous-refroidissement = T°sat à la HP (lue en bar) minus la température réelle du liquide en sortie de condenseur. Une valeur de 4-8K est normale."},
+  {cat:"INSTALLATION",q:"Pour le tirage au vide, quelle dépression minimale faut-il atteindre ?",opts:["2000 microns","1000 microns","500 microns","200 microns et moins"],a:3,exp:"Un vide de 200 microns ou moins garantit l'élimination de toute humidité et air non condensable. 500 microns est le minimum acceptable mais 200 est optimal."},
+  {cat:"RÉFRIGÉRATION",q:"Un réfrigérateur domestique utilisant R600a — quelle précaution principale ?",opts:["Utiliser des manomètres R22","Charge max 5 kg","Éviter toute flamme / étincelle : inflammable","Pas de précaution spéciale"],a:2,exp:"Le R600a (isobutane) est un fluide naturel très écologique (GWP=3) mais INFLAMMABLE. Toute intervention nécessite l'absence de flamme nue, d'étincelle, et une bonne ventilation."},
+  {cat:"ÉLECTRICITÉ",q:"Comment appelle-t-on le dispositif qui permet de mesurer en temps réel la consommation électrique du compresseur ?",opts:["Voltmètre","Pince ampèremétrique","Wattmètre","Capacimètre"],a:1,exp:"La pince ampèremétrique mesure le courant sans coupure du circuit. Un compresseur tirant plus de 110% de son courant nominal indique une surcharge ou un problème mécanique."},
+  {cat:"DÉPANNAGE",q:"Code erreur E3 Daikin indique :",opts:["Problème HP","Protection BP","Surchauffe compresseur","Communication"],a:1,exp:"E3 sur Daikin correspond à la protection par basse pression. Causes possibles : manque de charge, détendeur fermé, filtre bouché, évaporateur givré."},
+  {cat:"FLUIDES",q:"Pour un mélange zéotropique comme le R407C, comment doit-on faire la mise en charge ?",opts:["En phase gazeuse uniquement","En phase liquide uniquement","Indifférent","En alternant gaz et liquide"],a:1,exp:"Les mélanges zéotropiques (R407C, R410A) ont un glissement de température. En phase gazeuse, la composition peut changer. La charge DOIT se faire en phase liquide pour respecter le mélange."},
+  {cat:"INSTALLATION",q:"Quel est le diamètre standard de la ligne gaz (basse pression) pour un split R410A de 2.5 kW ?",opts:["1/4\" (6.35mm)","3/8\" (9.52mm)","1/2\" (12.7mm)","5/8\" (15.88mm)"],a:2,exp:"Pour un split 2.5 kW en R410A, la ligne gaz (retour compresseur) est généralement en 1/2\" (12.7mm). La ligne liquide est en 1/4\". Ces diamètres varient selon la puissance et la marque."},
+  {cat:"CIRCUIT FRIGO",q:"Quel est le rôle du filtre déshydrateur ?",opts:["Abaisser la pression","Retenir humidité et impuretés","Réguler le débit","Détecter les fuites"],a:1,exp:"Le filtre déshydrateur (ou drier) est placé sur la ligne liquide. Il retient l'humidité (gel de silice ou tamis moléculaire) et les particules. Un filtre saturé provoque une chute de pression et un givrage."},
+  {cat:"PAC",q:"En mode chauffage d'une PAC réversible, l'évaporateur est :",opts:["À l'intérieur","À l'extérieur","Dans le sol","Dans l'eau"],a:1,exp:"En mode chaud, la vanne 4 voies inverse le cycle. L'évaporateur (qui absorbe la chaleur) se retrouve à l'extérieur, et le condenseur (qui rejette la chaleur) est à l'intérieur."},
+  {cat:"NORMES",q:"Quelle est la température réglementaire minimale d'un congélateur commercial ?",opts:["-12°C","-15°C","-18°C","-25°C"],a:2,exp:"-18°C est la température minimale réglementaire pour la conservation des denrées surgelées, selon la réglementation européenne (directive 89/108/CEE)."},
+  {cat:"DÉPANNAGE",q:"De l'eau se forme sous un réfrigérateur, la cause la plus probable est :",opts:["Compresseur HS","Drain de condensats bouché","Thermostat défaillant","Surcharge de fluide"],a:1,exp:"L'eau sous un réfrigérateur est quasi toujours due au drain de condensats bouché (accumulation de débris biologiques). La solution : déboucher avec une tige ou eau chaude."},
+  {cat:"ÉLECTRICITÉ",q:"La résistance de crantcase heater sert à :",opts:["Chauffer l'air soufflé","Chauffer l'huile du compresseur à l'arrêt","Dégivrer l'évaporateur","Réchauffer les liaisons frigorigènes"],a:1,exp:"Le crankcase heater est une résistance qui maintient l'huile du carter compresseur à température lors des arrêts prolongés, évitant que le réfrigérant migre et se dissolve dans l'huile (risque coup de liquide au démarrage)."},
+  {cat:"FLUIDES",q:"Quel fluide de remplacement est recommandé pour le R22 (interdit depuis 2015) ?",opts:["R134a","R32","R407C ou R422D","R600a"],a:2,exp:"Le R407C est le remplacement drop-in le plus utilisé pour le R22 (même huile POE, pression proche). Le R422D est aussi utilisé. Attention : toujours vider complètement le circuit avant la substitution."}
+];
+
+let qIdx=0, score=0, answered=[];
+
+function initQCM(){
+  answered=new Array(questions.length).fill(null);
+  score=0; qIdx=0;
+  renderQuestion();
+  updateQCMScore();
+}
+
+function renderQuestion(){
+  const q=questions[qIdx];
+  document.getElementById('q-current').textContent=qIdx+1;
+  document.getElementById('q-total').textContent=questions.length;
+  const pct=((answered.filter(a=>a!==null).length)/questions.length)*100;
+  document.getElementById('qcm-progress').style.width=pct+'%';
+
+  let html=`<div class="question-card">
+    <div class="q-category">${q.cat}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="q-options">`;
+  q.opts.forEach((opt,i)=>{
+    let cls='q-opt';
+    if(answered[qIdx]!==null){
+      cls+=' disabled';
+      if(i===q.a) cls+=' correct';
+      else if(i===answered[qIdx]) cls+=' wrong';
+    }
+    html+=`<button class="${cls}" onclick="answerQ(${i})">${String.fromCharCode(65+i)}. ${opt}</button>`;
+  });
+  html+=`</div>`;
+  if(answered[qIdx]!==null){
+    html+=`<div class="q-explanation show">💡 ${q.exp}</div>`;
+  }
+  html+=`</div>`;
+  document.getElementById('question-area').innerHTML=html;
+}
+
+function answerQ(idx){
+  if(answered[qIdx]!==null)return;
+  answered[qIdx]=idx;
+  if(idx===questions[qIdx].a) score++;
+  updateQCMScore();
+  renderQuestion();
+  showToast(idx===questions[qIdx].a ? '✅ Bonne réponse !' : '❌ Mauvaise réponse');
+}
+
+function updateQCMScore(){
+  const total=answered.filter(a=>a!==null).length;
+  document.getElementById('qcm-score').textContent=score+'/'+(total||'0');
+  const pct=(total/questions.length)*100;
+  document.getElementById('qcm-progress').style.width=pct+'%';
+}
+
+function nextQuestion(){
+  if(qIdx<questions.length-1){qIdx++;renderQuestion();}
+  else showToast('🏁 Fin du QCM ! Score : '+score+'/'+questions.length);
+}
+function prevQuestion(){if(qIdx>0){qIdx--;renderQuestion();}}
+function resetQCM(){initQCM();showToast('🔄 QCM réinitialisé');}
+
+initQCM();
+
+// ======================== CHATBOT ========================
+const SYSTEM_PROMPT=`Tu es un expert technicien en froid et climatisation (CVC/HVAC) avec 20 ans d'expérience terrain en France. Tu réponds de manière précise, concise et pratique. 
+Domaines : climatisation split/multi-split/cassette/gainable, pompes à chaleur, réfrigération commerciale et domestique, fluides frigorigènes (R410A, R32, R22, R134a, R600a, R290), installation, mise en service, dépannage, normes F-Gas, réglementation française. 
+Format : réponses claires avec étapes numérotées si procédure, valeurs numériques précises quand pertinent. Langue : français. Ton : professionnel mais accessible. Commence directement la réponse sans formule de politesse.`;
+
+let chatHistory=[];
+
+async function sendChat(){
+  const input=document.getElementById('chat-input');
+  const msg=input.value.trim();
+  if(!msg)return;
+  input.value='';
+  input.style.height='auto';
+
+  addMessage('user',msg);
+  chatHistory.push({role:'user',content:msg});
+
+  const typing=addTyping();
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:SYSTEM_PROMPT,
+        messages:chatHistory
+      })
+    });
+    const data=await resp.json();
+    removeTyping(typing);
+    const text=data.content?.[0]?.text||'Désolé, je n\'ai pas pu traiter votre demande.';
+    addMessage('bot',text);
+    chatHistory.push({role:'assistant',content:text});
+    if(chatHistory.length>20){chatHistory=chatHistory.slice(-16);}
+  }catch(e){
+    removeTyping(typing);
+    addMessage('bot','⚠️ Connexion nécessaire pour l\'IA. Consultez les modules hors-ligne : Installation, Dépannage, Schémas.');
+  }
+}
+
+function quickChat(msg){
+  document.getElementById('chat-input').value=msg;
+  sendChat();
+  goTo('chatbot');
+}
+
+function addMessage(role,text){
+  const wrap=document.getElementById('chat-messages');
+  const now=new Date();
+  const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const div=document.createElement('div');
+  div.className='msg '+role;
+  // Simple markdown-ish
+  let formatted=text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n/g,'<br>');
+  div.innerHTML=`<div class="msg-bubble">${formatted}</div><div class="msg-time">${time}</div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop=wrap.scrollHeight;
+  return div;
+}
+
+function addTyping(){
+  const wrap=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='msg bot';
+  div.innerHTML=`<div class="msg-bubble"><div class="bot-typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop=wrap.scrollHeight;
+  return div;
+}
+function removeTyping(el){if(el&&el.parentNode)el.parentNode.removeChild(el);}
+
+// Auto-resize textarea
+document.getElementById('chat-input').addEventListener('input',function(){
+  this.style.height='auto';
+  this.style.height=Math.min(this.scrollHeight,120)+'px';
+});
+
+// ======================== TOAST ========================
+function showToast(msg,duration=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),duration);
+}
+
+// ======================== FULLSCREEN ========================
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+    showToast('📺 Mode plein écran');
+  }else{
+    document.exitFullscreen();
+  }
+}
+
+// ======================== SERVICE WORKER (Offline) ========================
+const swCode=`
+const CACHE='froidtech-v2';
+const ASSETS=[location.href];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+  const clone=res.clone();
+  caches.open(CACHE).then(c=>c.put(e.request,clone));
+  return res;
+}).catch(()=>r))));
+`;
+const blob=new Blob([swCode],{type:'application/javascript'});
+const swUrl=URL.createObjectURL(blob);
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register(swUrl).then(()=>{
+    showToast('✅ Mode hors-ligne activé');
+  }).catch(()=>{});
+}
+
+// ======================== PWA MANIFEST ========================
+const manifest={
+  name:'FroidTech Pro',
+  short_name:'FroidTech',
+  description:'Application technique froid et climatisation',
+  start_url:'./',
+  display:'standalone',
+  background_color:'#040d1a',
+  theme_color:'#0a1628',
+  orientation:'portrait-primary',
+  icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%230a1628"/><text y=".9em" font-size="80">❄️</text></svg>',sizes:'192x192',type:'image/svg+xml'}]
+};
+const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+document.getElementById('manifest-link').href=URL.createObjectURL(mBlob);
+
+// ======================== INIT ========================
+showToast('❄️ FroidTech Pro chargé !');
+</script>
+</body>
+</html>
